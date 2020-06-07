@@ -12,18 +12,19 @@ Run with `python remote_class_1.py`, parameters:
 
 ## Leader
 
-The leader has a list of its followers. Each follower has the `ray.remote` annotation.
+The leader has a list of its followers.
 The leader ask followers to run some computation then wait for results.
-As soon as result is processed, it's printed, the follower is asked to compute on a new value.
+As soon as a result is processed, it's printed, the follower is asked to compute on a new value.
 
 ## Follower
 
 The follower has no knowledge of the leader.
+The follower class has the `ray.remote` annotation.
 
 ## Notes
 
 * a follower computes a value only when asked to do so, no internal thread that keeps computing stuff
-* use `htop` to see cpu usage, quite fun
+* use `htop` to see cpu usage, quite interesting
 
 ## Resources
 
