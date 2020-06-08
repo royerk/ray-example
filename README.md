@@ -8,6 +8,7 @@ Run with `python remote_class_1.py`, parameters:
 * `--followers 2`
 * `--start 30` first value computed will be `fibonacci(30)`
 * `--end 38` last value computed will be `fibonacci(38)`
+* `--async` to request higher compute from some followers to see the asynchronous behavior
 * or run `python remote_class_1.py --help` for list of parameters
 
 ## Leader
