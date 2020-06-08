@@ -34,7 +34,7 @@ class Leader:
         ray.init(num_cpus=n_followers)
         self.followers = [Follower.remote(i) for i in range(n_followers)]
 
-    def get_fibonacci_values(self, start_n=20, end_n=30):
+    def get_fibonacci_values(self, start_n=20, end_n=30, force_async=False):
         """
         Ask followers to compute fibonacci values. Here followers are
         idle after submitting their answer.
@@ -70,16 +70,31 @@ class Leader:
 
             # ask the follower for another value
             if start_n <= end_n:
+                weird_factor = 0
+                if force_async:
+                    # this is a trick to observe the asynchronous behavior
+                    # some followers will be asked for higher numbers
+                    # this means: follower 0 should show more often
+                    weird_factor = (follower_id + 1) * 4
+                print(
+                    "Requesting fib({}) from follower: {}".format(
+                        start_n + weird_factor, follower_id
+                    )
+                )
                 fibonacci_list.extend(
-                    [self.followers[follower_id].follower_fibonacci.remote(start_n)]
+                    [
+                        self.followers[follower_id].follower_fibonacci.remote(
+                            start_n + weird_factor
+                        )
+                    ]
                 )
 
 
-def main(n_followers=2, start_n=30, end_n=38):
+def main(n_followers=2, start_n=30, end_n=38, force_async=False):
     start_date = datetime.now()
     leader = Leader(n_followers)
 
-    leader.get_fibonacci_values(start_n, end_n)
+    leader.get_fibonacci_values(start_n, end_n, force_async)
 
     end_date = datetime.now()
 
@@ -106,8 +121,18 @@ if __name__ == "__main__":
     parser.add_argument(
         "--end", default=30, type=int, help="Last value to compute",
     )
-
+    parser.add_argument(
+        "--async",
+        default=False,
+        help="Uneven load on followers to illustrate async better",
+        action="store_true",
+    )
     args = parser.parse_args()
     print(args)
 
-    main(n_followers=args.followers, start_n=args.start, end_n=args.end)
+    main(
+        n_followers=args.followers,
+        start_n=args.start,
+        end_n=args.end,
+        force_async=args.async,
+    )
